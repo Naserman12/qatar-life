@@ -3,24 +3,29 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Product;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
+ */
+use App\Models\Product;
 class ProductFactory extends Factory
 {
-    protected $model = Product::class;
 
-    public function definition()
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+     protected $model = Product::class;
+    public function definition(): array
     {
+        
         return [
-            'name' => $this->faker->word(),
-            'pack' => $this->faker->numberBetween(1, 24),
-            'size' => $this->faker->randomElement(['330ml', '500ml', '1L']),
-            'price' => $this->faker->randomFloat(2, 1, 100),
+                 'name' => $this->faker->word,
+            'price' => $this->faker->randomFloat(2, 5, 500),
+            'pack' => $this->faker->numberBetween(6, 24),
+            'size' => $this->faker->randomElement(['صغير', 'وسط', 'كبير']),
             'available' => true,
-            'description' => $this->faker->sentence(),
-            'image' => null,
-            'category' => $this->faker->word(),
-            'tax_included' => true,
         ];
     }
 }

@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
         $table->id();
+        $table->softDeletes();
         $table->string('name');
         $table->integer('pack'); // عدد العبوات في الكرتون
-        $table->integer('size');  // حجم العبوة (مثلا 330ml, 500ml)
+        $table->string('size');  // حجم العبوة (مثلا 330ml, 500ml)
         $table->decimal('price', 10, 2);
         $table->boolean('available')->default(true);
         $table->string('image')->nullable();        // رابط الصورة أو اسم الملف
@@ -31,6 +32,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+            Schema::dropIfExists('orders');
+            Schema::dropIfExists('carts');
+            Schema::dropIfExists('products');
     }
 };

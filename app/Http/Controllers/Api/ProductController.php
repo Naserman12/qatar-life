@@ -15,7 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return response()->json($products);
+        return response()->json(['data' => $products]);
     }
 
     /**
@@ -92,8 +92,6 @@ class ProductController extends Controller
             'product' => $product
         ]);
     }
-
-
     /**
      * Remove the specified resource from storage.
      */

@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Http\Controllers\Api\UserController;
 
-Route::apiResource('products', ProductController::class);
-Route::apiResource('cart', CartController::class);
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/profile', [UserController::class, 'profile'])->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/users', [UserController::class, 'index']); // كل الطلبات
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/admin/users', [UserController::class, 'index']); // كل الطلبات
+    Route::apiResource('/cart', CartController::class);
+    Route::apiResource('/products', ProductController::class)->except(['index']);
     Route::get('/admin/orders', [OrderController::class, 'allOrders']); // كل الطلبات
     Route::post('/admin/orders/{id}/confirm', [OrderController::class, 'confirmOrder']); // تأكيد الطلب
     Route::delete('/admin/orders/{id}', [OrderController::class, 'destroy']); // حذف الطلب
@@ -24,8 +33,3 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
-Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
-Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
-Route::get('/profile', [UserController::class, 'profile'])->middleware('auth:sanctum');

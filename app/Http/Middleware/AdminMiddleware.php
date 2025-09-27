@@ -15,6 +15,7 @@ class AdminMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
           public function handle(Request $request, Closure $next) {
+            
         // نفترض أن المستخدم لديه حقل 'is_admin' في جدول users
         if (!Auth::check() || !Auth::user()->is_admin) {
             return response()->json(['message' => '❌ غير مسموح لك بالوصول'], 403);

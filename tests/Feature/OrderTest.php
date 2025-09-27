@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use Illuminate\Support\Facades\Schema;
+
 class OrderTest extends TestCase
 {
     use RefreshDatabase;
@@ -36,4 +38,12 @@ class OrderTest extends TestCase
             'id' => $order->id
         ]);
     }
+
+        protected function setUp(): void
+        {
+            parent::setUp();
+            Schema::disableForeignKeyConstraints();
+            $this->artisan('migrate:fresh');
+            Schema::enableForeignKeyConstraints();
+        }
 }

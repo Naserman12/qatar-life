@@ -1,0 +1,44 @@
+المشكلة:
+
+أثناء تشغيل اختبارات Laravel باستخدام MySQL، ظهرت الأخطاء التالية:
+
+Unsupported cipher or incorrect key length
+
+سببها: مفتاح التطبيق (APP_KEY) في ملف .env غير موجود أو غير صالح للطول المطلوب.
+
+أثرها: أي عملية تستخدم التشفير مثل الجلسات أو API tokens تفشل، مما يجعل بعض الاختبارات تفشل.
+
+Integrity constraint violation عند حذف المنتج
+
+سببها: جدول products مرتبط بجدولين آخرين (carts و orders) عن طريق foreign keys مع خيار onDelete('cascade').
+
+في الاختبارات، عند محاولة حذف منتج موجود في carts أو orders، قاعدة البيانات تمنع الحذف بسبب قيود المفتاح الخارجي، مما يؤدي لفشل الاختبار product can be deleted.
+
+الحل:
+
+تصحيح مفتاح التطبيق:
+
+توليد مفتاح جديد صالح في Laravel باستخدام الأمر:
+
+php artisan key:generate
+
+
+هذا يولد قيمة صحيحة في .env لسطر:
+
+APP_KEY=base64:...
+
+
+بعد ذلك، أي عمليات تشفير أو جلسات تعمل بشكل طبيعي.
+
+حل مشاكل الحذف المرتبط بالمفاتيح الخارجية:
+
+التأكد أن الجداول المرتبطة مثل carts و orders تحذف الصفوف التابعة أولاً قبل حذف المنتج.
+
+مثال في الاختبارات أو الكود:
+
+Cart::where('product_id', $product->id)->delete();
+Order::where('product_id', $product->id)->delete();
+$product->delete();
+
+
+أو الاعتماد على softDeletes() في جدول products بحيث لا يتم الحذف الفعلي مباشرة.
