@@ -14,9 +14,9 @@ class ProductSeeder extends Seeder
 
 public function run(): void
 {
-    Product::create(['name' => 'Product 1','pack' =>48,'size' =>'330', 'price' => 20]);
-    Product::create(['name' => 'Product 2','pack' =>40,'size' =>'550','price' => 15]);
-    Product::create(['name' => 'Product 3','pack' =>20,'size' =>'240', 'price' => 8]);
+    Product::create(['name' => 'قطرة حياة','pack' =>48,'size' =>'330', 'price' => 20]);
+    Product::create(['name' => 'ندى','pack' =>40,'size' =>'550','price' => 15]);
+    Product::create(['name' => 'حا','pack' =>20,'size' =>'240', 'price' => 8]);
 }
 
 
