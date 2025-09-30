@@ -16,7 +16,7 @@ class UsersTableSeeder extends Seeder
     public function run(): void
     {
         // حذف جميع المستخدمين القدامى
-        User::truncate();
+        // User::truncate();
         
         // إنشاء مستخدم مدير ثابت (admin)
         User::create([
@@ -27,7 +27,8 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('Hafid053'),
             'remember_token' => Str::random(10),
         ]);
-
+        
+        // NIXPACKS_BUILD_CMD=php artisan db:seed --class=Database\\Seeders\\UsersTableSeeder
         // إنشاء 20 مستخدمًا عاديًا باستخدام الـ factory
         User::factory()->count(20)->create();
     
