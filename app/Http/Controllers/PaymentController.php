@@ -23,12 +23,14 @@ class PaymentController extends Controller
             'description' => $request->description ?? 'Order Payment',
             'callback_url' => url('http://localhost:5173/payment-success'),
             'source' => [
-                'type' => 'creditcard',
-                'number' => '4111111111111111',
-                'expiry_month' => '12',
-                'expiry_year' => '2025',
-                'cvv' => '123',
-            ],
+                        'type' => 'creditcard',
+                        'name' => 'Test User',
+                        'number' => '4111111111111111',
+                        'cvc' => '123',
+                        'month' => '12',
+                        'year' => '2025',
+                    ],
+
         ]);
 
         return response()->json($response->json());
