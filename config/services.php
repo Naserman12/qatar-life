@@ -27,6 +27,11 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    
+    'moyasar' => [
+    'secret' => env('MOYASAR_SECRET_KEY'),
+    'publishable' => env('MOYASAR_PUBLISHABLE_KEY'),
+    ],
 
     'slack' => [
         'notifications' => [

@@ -16,6 +16,13 @@ class OrderController extends Controller
         $orders = Order::with('product', 'user')->get();
         return response()->json($orders);
     }
+    public function myOrders(Request $request)
+    {
+        return $request->user()
+            ->orders()
+            ->latest()
+            ->get();
+    }
 
      // تأكيد الطلب (يغير الحالة ويحذف من السلة)
     public function confirmOrder($id)
@@ -47,13 +54,19 @@ class OrderController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
         ]);
-
+        $subtotal = $request->quantity * Product::find($request->product_id)->price;
+        $total = $subtotal * 1.15; //  إضافة تكاليف الشحن أو الضرائب 
         $order = Order::create([
-            'user_id' => Auth::id(),
-            'product_id' => $request->product_id,
-            'quantity' => $request->quantity,
-            'status' => 'pending',
-        ]);
+                'user_id' => Auth::id(),
+                'product_id' => $request->product_id,
+                'quantity' => $request->quantity,
+        'customer_name' => $request->name,
+        'phone' => $request->phone,
+        'items' => $request->cart,
+        'subtotal' => $subtotal,
+        'total' => $total,
+        'status' => 'pending',
+         ]);
 
         return response()->json([
             'message' => '✅ تم إنشاء الطلب بنجاح',
@@ -82,9 +95,7 @@ class OrderController extends Controller
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
-
         $order->update(['quantity' => $request->quantity]);
-
         return response()->json([
             'message' => '✅ تم تحديث الطلب',
             'order' => $order

@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PaymentController;
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
@@ -17,6 +19,13 @@ Route::get('/profile', [UserController::class, 'profile'])->middleware('auth:san
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+    });
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'show']);
+        Route::put('/profile', [ProfileController::class, 'update']);
+        Route::get('/my-orders', [OrderController::class, 'myOrders']);
+        Route::post('/payment/create', [PaymentController::class, 'createPayment']);
+        Route::get('/payment/callback', [PaymentController::class, 'callback']);
 });
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/users', [UserController::class, 'index']); // كل الطلبات

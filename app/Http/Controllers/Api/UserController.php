@@ -22,12 +22,17 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+            'phone' => [
+                'required',
+                'regex:/^\+?[0-9]{9,15}$/'
+            ],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'phone' => $request->phone,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
