@@ -21,7 +21,9 @@ class PaymentController extends Controller
             'amount' => $request->amount * 100, // ريال → هللة
             'currency' => 'SAR',
             'description' => $request->description ?? 'Order Payment',
-            'callback_url' => url('http://localhost:5173/payment-success'),
+            'callback_url' => 'http://localhost:5173/payment-success',
+            'error_url' => 'http://localhost:5173/payment-failed',
+
             'source' => [
                         'type' => 'creditcard',
                         'name' => 'Test User',
