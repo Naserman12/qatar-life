@@ -100,18 +100,15 @@ $response = Http::withBasicAuth(
         $this->processGift($order);
 
         // 🔁 تحويل المستخدم لصفحة النجاح
-        return redirect('http://localhost:5173/payment-success');
+        return redirect('https://qatra-haya.web.app/payment-success');
     }
-
     /**
      * 🎁 معالجة الإهداء بعد إنشاء الطلب
      */
-    private function processGift(Order $order)
-    {
+    private function processGift(Order $order){
         if (!$order->is_gift) {
             return;
         }
-
         // 📲 الإهداء عبر المتجر
         if ($order->gift_send_mode === 'store') {
 
@@ -121,14 +118,11 @@ $response = Http::withBasicAuth(
                 'message' => $order->gift_message,
                 'from' => $order->gift_from,
             ]);
-
             // هنا لاحقًا:
             // WhatsApp API / SMS / Notification
         }
-
         // 👤 الإهداء من المستخدم
         if ($order->gift_send_mode === 'user') {
-
             Log::info('🎁 Gift via USER (no auto send)', [
                 'note' => 'User will contact recipient manually',
             ]);
