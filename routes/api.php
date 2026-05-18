@@ -25,8 +25,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         Route::put('/profile', [ProfileController::class, 'update']);
         Route::get('/my-orders', [OrderController::class, 'myOrders']);
         Route::post('/payment/create', [PaymentController::class, 'createPayment']);
+        });
         Route::get('/payment/callback', [PaymentController::class, 'callback']);
-});
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/users', [UserController::class, 'index']); // كل الطلبات
 Route::middleware('auth:sanctum')->group(function () {

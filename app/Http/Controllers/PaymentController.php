@@ -29,9 +29,8 @@ class PaymentController extends Controller
             'amount' => $request->amount,
             'cart_items' => $request->cart_items,
             'gift_data' => $request->gift_data,
-            'user_id' => optional(auth()->user())->id,
-        ], now()->addMinutes(30));
-
+            'user_id' => $request->user()->id ?? null,
+        ], now()->addMinutes(30)); // صلاحية 30 دقيقة
         // 💳 إنشاء عملية دفع في Moyasar
 $response = Http::withBasicAuth(
     config('services.moyasar.secret'),
@@ -42,15 +41,10 @@ $response = Http::withBasicAuth(
     'description' => 'Order Payment - Katra Life',
     'callback_url' => 'https://qatar-life-production.up.railway.app/api/payment/callback?session_id=' . $paymentSessionId,
     'error_url' => 'http://localhost:5173/payment-failed',
-'source' => [
-    'type' => 'creditcard',
-    'name' => $request->card['name'],
-    'number' => $request->card['number'],
-    'month' => $request->card['month'],
-    'year' => $request->card['year'],
-    'cvc' => $request->card['cvc'],
-]
-
+  'source' => [
+        'type' => 'creditcard',
+        'manual' => false,
+    ]
 ]);
 
 
