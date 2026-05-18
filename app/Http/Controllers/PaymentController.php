@@ -40,7 +40,7 @@ $response = Http::withBasicAuth(
     'amount' => intval($request->amount) * 100,
     'currency' => 'SAR',
     'description' => 'Order Payment - Katra Life',
-    'callback_url' => url('https://qatar-life-production.up.railway.app/api/payment/callback?session_id=' . $paymentSessionId),
+    'callback_url' => 'https://qatar-life-production.up.railway.app/api/payment/callback?session_id=' . $paymentSessionId,
     'error_url' => 'http://localhost:5173/payment-failed',
   'source' => [
         'type' => 'payment_page',
