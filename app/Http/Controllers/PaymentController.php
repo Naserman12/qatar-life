@@ -43,7 +43,7 @@ $response = Http::withBasicAuth(
     'callback_url' => 'https://qatar-life-production.up.railway.app/api/payment/callback?session_id=' . $paymentSessionId,
     'error_url' => 'http://localhost:5173/payment-failed',
   'source' => [
-        'type' => 'payment_page',
+        'type' => 'creditcard',
         'manual' => false,
     ]
 ]);
