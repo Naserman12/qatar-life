@@ -43,7 +43,11 @@ $response = Http::withBasicAuth(
     'error_url' => 'http://localhost:5173/payment-failed',
   'source' => [
         'type' => 'creditcard',
-        'manual' => false,
+          'name' => $request->card['name'],
+    'number' => $request->card['number'],
+    'month' => $request->card['month'],
+    'year' => $request->card['year'],
+    'cvc' => $request->card['cvc'],
     ]
 ]);
 
