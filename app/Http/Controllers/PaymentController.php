@@ -10,48 +10,9 @@ use App\Models\Order;
 
 class PaymentController extends Controller
 {
-    /**
-     * 💳 إنشاء عملية دفع في Moyasar
-     */
-<!-- 
-        public function createPayment(Request $request)
-    {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'cart_items' => 'required|array',
-            'gift_data' => 'nullable|array',
-        ]);
-
-        // 🧠 إنشاء معرف مؤقت للدفع
-        $paymentSessionId = uniqid('payment_');
-
-        // 💾 حفظ بيانات الطلب مؤقتًا
-        Cache::put($paymentSessionId, [
-            'amount' => $request->amount,
-            'cart_items' => $request->cart_items,
-            'gift_data' => $request->gift_data,
-            'user_id' => optional(auth()->user())->id,
-        ], now()->addMinutes(30));
-
-        // 💳 إنشاء عملية دفع في Moyasar
-$response = Http::withBasicAuth(
-    config('services.moyasar.secret'),
-    ''
-)->post('https://api.moyasar.com/v1/payments', [
-    'amount' => intval($request->amount) * 100,
-    'currency' => 'SAR',
-    'description' => 'Order Payment - Katra Life',
-    'callback_url' => url('/api/payment/callback?session_id=' . $paymentSessionId),
-    'error_url' => 'http://localhost:5173/payment-failed',
-    'source' => [
-        'type' => 'creditcard',
-    ]
-]);
-
-
-
-        return response()->json($response->json());
-    } -->
+        /**
+        * 💳 إنشاء عملية دفع جديدة
+        */
 
 public function createPayment(Request $request)
 {
@@ -85,7 +46,6 @@ public function createPayment(Request $request)
 
     return response()->json($response->json());
 }
-
     /**
      * ✅ بعد نجاح الدفع
      */
