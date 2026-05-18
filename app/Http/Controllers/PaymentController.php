@@ -42,10 +42,15 @@ $response = Http::withBasicAuth(
     'description' => 'Order Payment - Katra Life',
     'callback_url' => 'https://qatar-life-production.up.railway.app/api/payment/callback?session_id=' . $paymentSessionId,
     'error_url' => 'http://localhost:5173/payment-failed',
-  'source' => [
-        'type' => 'creditcard',
-        'manual' => false,
-    ]
+'source' => [
+    'type' => 'creditcard',
+    'name' => $request->card['name'],
+    'number' => $request->card['number'],
+    'month' => $request->card['month'],
+    'year' => $request->card['year'],
+    'cvc' => $request->card['cvc'],
+]
+
 ]);
 
 
