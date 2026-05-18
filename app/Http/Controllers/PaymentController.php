@@ -10,42 +10,48 @@ use App\Models\Order;
 
 class PaymentController extends Controller
 {
-        /**
-        * 💳 إنشاء عملية دفع جديدة
-        */
+    /**
+     * 💳 إنشاء عملية دفع في Moyasar
+     */
+    public function createPayment(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric',
+            'cart_items' => 'required|array',
+            'gift_data' => 'nullable|array',
+        ]);
 
-public function createPayment(Request $request)
-{
-    $request->validate([
-        'amount' => 'required|numeric',
-        'cart_items' => 'required|array',
-        'card' => 'required|array',
-        'card.name' => 'required|string',
-        'card.number' => 'required|string',
-        'card.month' => 'required|string',
-        'card.year' => 'required|string',
-        'card.cvc' => 'required|string',
-    ]);
+        // 🧠 إنشاء معرف مؤقت للدفع
+        $paymentSessionId = uniqid('payment_');
 
-    $response = Http::withBasicAuth(
-        config('services.moyasar.secret'),
-        ''
-    )->post('https://api.moyasar.com/v1/payments', [
-        'amount' => intval($request->amount) * 100,
-        'currency' => 'SAR',
-        'description' => 'Order Payment - Katra Life',
-        'source' => [
-            'type' => 'creditcard',
-            'name' => $request->card['name'],
-            'number' => $request->card['number'],
-            'month' => $request->card['month'],
-            'year' => $request->card['year'],
-            'cvc' => $request->card['cvc'],
-        ]
-    ]);
+        // 💾 حفظ بيانات الطلب مؤقتًا
+        Cache::put($paymentSessionId, [
+            'amount' => $request->amount,
+            'cart_items' => $request->cart_items,
+            'gift_data' => $request->gift_data,
+            'user_id' => optional(auth()->user())->id,
+        ], now()->addMinutes(30));
 
-    return response()->json($response->json());
-}
+        // 💳 إنشاء عملية دفع في Moyasar
+$response = Http::withBasicAuth(
+    config('services.moyasar.secret'),
+    ''
+)->post('https://api.moyasar.com/v1/payments', [
+    'amount' => intval($request->amount) * 100,
+    'currency' => 'SAR',
+    'description' => 'Order Payment - Katra Life',
+    'callback_url' => url('https://qatar-life-production.up.railway.app/api/payment/callback?session_id=' . $paymentSessionId),
+    'error_url' => 'http://localhost:5173/payment-failed',
+  'source' => [
+        'type' => 'creditcard'
+    ]
+]);
+
+
+
+        return response()->json($response->json());
+    }
+
     /**
      * ✅ بعد نجاح الدفع
      */
