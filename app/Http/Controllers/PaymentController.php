@@ -13,7 +13,8 @@ class PaymentController extends Controller
     /**
      * 💳 إنشاء عملية دفع في Moyasar
      */
-    public function createPayment(Request $request)
+<!-- 
+        public function createPayment(Request $request)
     {
         $request->validate([
             'amount' => 'required|numeric',
@@ -50,7 +51,40 @@ $response = Http::withBasicAuth(
 
 
         return response()->json($response->json());
-    }
+    } -->
+
+public function createPayment(Request $request)
+{
+    $request->validate([
+        'amount' => 'required|numeric',
+        'cart_items' => 'required|array',
+        'card' => 'required|array',
+        'card.name' => 'required|string',
+        'card.number' => 'required|string',
+        'card.month' => 'required|string',
+        'card.year' => 'required|string',
+        'card.cvc' => 'required|string',
+    ]);
+
+    $response = Http::withBasicAuth(
+        config('services.moyasar.secret'),
+        ''
+    )->post('https://api.moyasar.com/v1/payments', [
+        'amount' => intval($request->amount) * 100,
+        'currency' => 'SAR',
+        'description' => 'Order Payment - Katra Life',
+        'source' => [
+            'type' => 'creditcard',
+            'name' => $request->card['name'],
+            'number' => $request->card['number'],
+            'month' => $request->card['month'],
+            'year' => $request->card['year'],
+            'cvc' => $request->card['cvc'],
+        ]
+    ]);
+
+    return response()->json($response->json());
+}
 
     /**
      * ✅ بعد نجاح الدفع
