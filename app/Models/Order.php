@@ -11,9 +11,18 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'product_id',
-        'quantity',
         'status',
+
+        'total',
+
+        'items',
+        'paid_at',
+
+        'is_gift',
+        'gift_name',
+        'gift_phone',
+        'gift_from',
+        'gift_message',
     ];
 
     public function product()
@@ -27,5 +36,6 @@ class Order extends Model
     protected $casts = [
     'items' => 'array',
     'paid_at' => 'datetime',
+    'is_gift' => 'boolean',
     ];
 }

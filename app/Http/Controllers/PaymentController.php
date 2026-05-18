@@ -4,13 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-
+use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
 class PaymentController extends Controller
 {
     public function createPayment(Request $request)
     {
+        if (!Auth::check()) {
+        return response()->json([
+            'message' => 'يجب تسجيل الدخول أولاً'
+        ], 401);
+        }
         $request->validate([
             'amount' => 'required|numeric',
+            'cart' => 'required|array',
             'description' => 'nullable|string',
         ]);
 
@@ -40,6 +47,15 @@ class PaymentController extends Controller
 
     public function callback(Request $request)
     {
-        return view('payment.success');
+        $orderId = $request->query('order_id');
+
+        $order = Order::find($orderId);
+
+        if ($order) {
+            $order->status = 'paid';
+            $order->save();
+        }
+
+        return redirect('http://localhost:5173/payment-success');
     }
 }
