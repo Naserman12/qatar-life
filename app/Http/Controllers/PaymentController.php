@@ -33,16 +33,21 @@ class PaymentController extends Controller
         ], now()->addMinutes(30));
 
         // 💳 إنشاء عملية دفع في Moyasar
-        $response = Http::withBasicAuth(
-            config('services.moyasar.secret'),
-            ''
-        )->post('https://api.moyasar.com/v1/payments', [
-            'amount' => $request->amount * 100, // تحويل إلى هللة
-            'currency' => 'SAR',
-            'description' => 'Order Payment - Katra Life',
-            'callback_url' => url('/api/payment/callback?session_id=' . $paymentSessionId),
-            'error_url' => 'http://localhost:5173/payment-failed',
-        ]);
+$response = Http::withBasicAuth(
+    config('services.moyasar.secret'),
+    ''
+)->post('https://api.moyasar.com/v1/payments', [
+    'amount' => intval($request->amount) * 100,
+    'currency' => 'SAR',
+    'description' => 'Order Payment - Katra Life',
+    'callback_url' => url('/api/payment/callback?session_id=' . $paymentSessionId),
+    'error_url' => 'http://localhost:5173/payment-failed',
+    'source' => [
+        'type' => 'creditcard',
+    ]
+]);
+
+
 
         return response()->json($response->json());
     }
