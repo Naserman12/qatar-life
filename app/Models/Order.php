@@ -17,6 +17,7 @@ class Order extends Model
 
         'items',
         'paid_at',
+        'gift_contact_method',
 
         'is_gift',
         'gift_name',
