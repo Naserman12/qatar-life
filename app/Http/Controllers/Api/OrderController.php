@@ -34,10 +34,7 @@ class OrderController extends Controller
 
         $order->status = 'confirmed';
         $order->save();
-
-        // حذف الطلب من سلة المستخدم
-        $order->delete();
-
+        
         return response()->json(['message' => '✅ تم تأكيد الطلب وحذفه من السلة']);
     }
     // عرض جميع الطلبات للمستخدم الحالي
@@ -95,13 +92,26 @@ class OrderController extends Controller
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
+
+
         $order->update(['quantity' => $request->quantity]);
         return response()->json([
             'message' => '✅ تم تحديث الطلب',
             'order' => $order
         ]);
     }
+    public function updateStatus(Request $request, Order $order)
+            {
+                $request->validate([
+                    'status' => 'required|in:pending,paid,confirmed,delivered,cancelled'
+                ]);
 
+                $order->update([
+                    'status' => $request->status
+                ]);
+
+                return response()->json(['message' => 'تم تحديث حالة الطلب']);
+            }
     // حذف الطلب
     public function destroy($id)
     {

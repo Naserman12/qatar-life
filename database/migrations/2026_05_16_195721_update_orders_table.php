@@ -25,13 +25,7 @@ public function up(): void
         $table->decimal('total', 10, 2)->default(0);
         $table->decimal('tax', 10, 2)->default(0);
 
-        // حالة الطلب
-        // $table->enum('status', [
-        //     'pending',
-        //     'paid',
-        //     'failed',
-        //     'cancelled'
-        // ])->default('pending');
+    
         // الدفع (Moyasar)
         $table->string('payment_id')->nullable();   // id من Moyasar
         $table->string('payment_status')->nullable(); // paid / failed

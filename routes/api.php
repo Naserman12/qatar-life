@@ -29,10 +29,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         Route::get('/payment/callback', [PaymentController::class, 'callback']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/users', [UserController::class, 'index']); // كل الطلبات
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::apiResource('/cart', CartController::class);
     Route::apiResource('/products', ProductController::class)->except(['index']);
-    Route::get('/admin/orders', [OrderController::class, 'allOrders']); // كل الطلبات
+    Route::get('/admin/orders', [OrderController::class, 'allOrders']); // كل الطلبات4
+    Route::put('/admin/orders/{id}', [OrderController::class, 'update']); // تحديث الطلب
+     Route::post('/admin/orders/{order}/status', [OrderController::class, 'updateStatus']); // تحديث حالة الطلب
     Route::post('/admin/orders/{id}/confirm', [OrderController::class, 'confirmOrder']); // تأكيد الطلب
     Route::delete('/admin/orders/{id}', [OrderController::class, 'destroy']); // حذف الطلب
     Route::apiResource('orders', OrderController::class);

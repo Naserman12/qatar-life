@@ -74,6 +74,7 @@ $response = Http::withBasicAuth(
 
         // 💳 إنشاء الطلب الحقيقي بعد نجاح الدفع
         $order = Order::create([
+            
             'user_id' => $paymentData['user_id'],
 
             // 💰 المبلغ
@@ -81,10 +82,14 @@ $response = Http::withBasicAuth(
 
             // 🛒 المنتجات
             'items' => json_encode($paymentData['cart_items']),
+            // حالة الطلب
+            'status' => 'pending', // الطلب قيد التنفيذ
 
-            // 📌 حالة الطلب
-            'status' => 'paid',
-
+            // حالة الدفع
+            'payment_status' => 'paid',
+            'payment_id' => $request->id ?? null,
+            'payment_method' => 'card',
+            // المبلغ
             // 🎁 الإهداء
             'is_gift' => !empty($paymentData['gift_data']),
 
