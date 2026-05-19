@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         Route::get('/payment/callback', [PaymentController::class, 'callback']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/users', [UserController::class, 'index']); // كل الطلبات
-Route::middleware(['auth', 'is_admin'])->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('/cart', CartController::class);
     Route::apiResource('/products', ProductController::class)->except(['index']);
     Route::get('/admin/orders', [OrderController::class, 'allOrders']); // كل الطلبات4
