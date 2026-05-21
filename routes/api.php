@@ -28,7 +28,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         });
         Route::get('/payment/callback', [PaymentController::class, 'callback']);
 Route::get('/products', [ProductController::class, 'index']);
-Route::get('/users', [UserController::class, 'index']); // كل الطلبات
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('/cart', CartController::class);
     Route::apiResource('/products', ProductController::class)->except(['index']);
@@ -38,6 +37,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('/admin/orders/{id}/confirm', [OrderController::class, 'confirmOrder']); // تأكيد الطلب
     Route::delete('/admin/orders/{id}', [OrderController::class, 'destroy']); // حذف الطلب
     Route::apiResource('orders', OrderController::class);
+    Route::get('/users', [UserController::class, 'index']); 
 });
 
 Route::get('/user', function (Request $request) {

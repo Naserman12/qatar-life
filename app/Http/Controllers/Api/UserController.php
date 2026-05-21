@@ -12,8 +12,7 @@ class UserController extends Controller
 {
      public function index()
     {
-        $users = User::all();
-        return $users;
+      return User::withCount('orders')->get();
     }
     // تسجيل مستخدم جديد
     public function register(Request $request)
