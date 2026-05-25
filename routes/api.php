@@ -28,6 +28,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         });
         Route::get('/payment/callback', [PaymentController::class, 'callback']);
 Route::get('/products', [ProductController::class, 'index']);
+// فلاتر
+Route::get('/products/quran', [ProductController::class, 'quran']);
+Route::get('/products/items', [ProductController::class, 'products']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('/cart', CartController::class);
     Route::apiResource('/products', ProductController::class)->except(['index']);

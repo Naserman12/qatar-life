@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
@@ -17,34 +18,59 @@ class ProductController extends Controller
         $products = Product::all();
         return response()->json(['data' => $products]);
     }
+      /**
+     * 🧴 عرض منتجات عادية فقط
+     */
+    public function products()
+    {
+        $products = Product::where('type', 'product')->get();
 
+        return response()->json($products);
+    }
+    /**
+     * 📖 عرض كتب القرآن فقط
+     */
+    public function quran()
+    {
+        $quran = Product::where('type', 'quran')->get();
+
+        return response()->json($quran);
+    }
     /**
      * Store a newly created resource in storage.
      */
       // إضافة منتج جديد
-    public function store(Request $request)
-    {
-        // التحقق من المدخلات
-        $request->validate([
-                'name' => 'required|string|max:255',
-                'pack' => 'required|integer|min:1',
-                'size' => 'required|string|max:50',
-                'price' => 'required|numeric|min:0',
-                'available' => 'boolean',
-                'description' => 'nullable|string',
-                'image' => 'nullable|string',
-                'category' => 'nullable|string',
-                'tax_included' => 'boolean',
-        ]);
+public function store( ProductRequest  $request)
+{
+    $product = Product::create([
+        'name' => $request->name,
+        'price' => $request->price,
+        'image' => $request->image,
+        'description' => $request->description,
+        'available' => $request->available ?? 1,
 
-        // إنشاء المنتج
-        $product = Product::create($request->all());
+        'type' => $request->type,
 
-        return response()->json([
-            'message' => '✅ تم إضافة المنتج بنجاح',
-            'product' => $product
-        ], 201);
-    }
+        // 📖 Quran flag
+        'is_quran' => $request->type === 'quran',
+
+        // 📖 Quran fields
+        'publisher' => $request->publisher,
+        'pages' => $request->pages,
+        'language' => $request->language,
+        'cover_type' => $request->cover_type,
+        'edition' => $request->edition,
+
+        // 🧴 product fields
+        'size' => $request->size,
+        'pack' => $request->pack,
+    ]);
+
+    return response()->json([
+        'message' => '✅ تم إضافة المنتج بنجاح',
+        'product' => $product
+    ], 201);
+}
 
     /**
      * Display the specified resource.
@@ -62,36 +88,36 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id){
-    // إيجاد المنتج حسب الـ ID
-        $product = Product::find($id);
+   public function update(ProductRequest $request, $id)
+{
+    $product = Product::findOrFail($id);
 
-        if (!$product) {
-            return response()->json(['message' => '❌ المنتج غير موجود'], 404);
-        }
+    $product->update([
+        'name' => $request->name,
+        'price' => $request->price,
+        'image' => $request->image,
+        'description' => $request->description,
+        'available' => $request->available,
 
-        // ✅ التحقق من صحة البيانات
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'pack' => 'required|integer|min:1',
-            'size' => 'required|string|max:50',
-            'price' => 'required|numeric|min:0',
-            'available' => 'boolean',
-            'description' => 'nullable|string',
-            'image' => 'nullable|string',
-            'category' => 'nullable|string',
-            'tax_included' => 'boolean',
-        ]);
+        'type' => $request->type,
 
-        // ✅ تحديث المنتج
-        $product->update($validated);
+        'is_quran' => $request->type === 'quran',
 
-        // ✅ الرد بالنجاح والمنتج المحدث
-        return response()->json([
-            'message' => '✅ تم تحديث المنتج بنجاح',
-            'product' => $product
-        ]);
-    }
+        'publisher' => $request->publisher,
+        'pages' => $request->pages,
+        'language' => $request->language,
+        'cover_type' => $request->cover_type,
+        'edition' => $request->edition,
+
+        'size' => $request->size,
+        'pack' => $request->pack,
+    ]);
+
+    return response()->json([
+        'message' => '✅ تم تحديث المنتج بنجاح',
+        'product' => $product
+    ]);
+}
     /**
      * Remove the specified resource from storage.
      */
