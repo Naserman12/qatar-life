@@ -19,7 +19,7 @@ class ProductRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|string|max:500',
             'description' => 'nullable|string',
-            'available' => 'boolean',
+            'available' => 'nullable',
 
             // 🧾 النوع
             'type' => 'required|in:product,quran',

@@ -47,12 +47,12 @@ public function store( ProductRequest  $request)
         'price' => $request->price,
         'image' => $request->image,
         'description' => $request->description,
-        'available' => $request->available ?? 1,
+        'available' => filter_var($request->available, FILTER_VALIDATE_BOOLEAN),
 
         'type' => $request->type,
 
         // 📖 Quran flag
-        'is_quran' => $request->type === 'quran',
+        'is_quran' => $request->type === 'quran' ? 1 : 0,
 
         // 📖 Quran fields
         'publisher' => $request->publisher,
@@ -97,11 +97,12 @@ public function store( ProductRequest  $request)
         'price' => $request->price,
         'image' => $request->image,
         'description' => $request->description,
-        'available' => $request->available,
+        'available' => filter_var($request->available, FILTER_VALIDATE_BOOLEAN),
 
         'type' => $request->type,
 
-        'is_quran' => $request->type === 'quran',
+        'is_quran' => $request->type === 'quran' ? 1 : 0,
+
 
         'publisher' => $request->publisher,
         'pages' => $request->pages,

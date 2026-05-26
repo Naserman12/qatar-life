@@ -25,20 +25,20 @@ return new class extends Migration
          $table->boolean('tax_included')->default(true); // هل السعر شامل الضريبة
 
          
-                     // نوع المنتج (عادي أو مصحف)
-            $table->string('type')->default('product');
+            //          // نوع المنتج (عادي أو مصحف)
+            // $table->string('type')->default('product');
 
-            // بيانات المصحف (اختياري)
-            $table->string('publisher')->nullable();   // دار النشر
-            $table->integer('pages')->nullable();      // عدد الصفحات
-            $table->string('language')->nullable();    // اللغة
-            $table->string('cover_type')->nullable();  // نوع الغلاف
+            // // بيانات المصحف (اختياري)
+            // $table->string('publisher')->nullable();   // دار النشر
+            // $table->integer('pages')->nullable();      // عدد الصفحات
+            // $table->string('language')->nullable();    // اللغة
+            // $table->string('cover_type')->nullable();  // نوع الغلاف
 
-            // لو فيه طبعة أو إصدار
-            $table->string('edition')->nullable();
+            // // لو فيه طبعة أو إصدار
+            // $table->string('edition')->nullable();
 
-            // هل هو مصحف فعلي
-            $table->boolean('is_quran')->default(false);
+            // // هل هو مصحف فعلي
+            // $table->boolean('is_quran')->default(false);
          
         $table->timestamps();
         });
