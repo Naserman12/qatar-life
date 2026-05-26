@@ -21,5 +21,16 @@ class Product extends Model
             'image',
             'category',
             'tax_included',
+
+               // ⭐ مهم
+    'type',
+    'is_quran',
+
+    // Quran
+    'publisher',
+    'pages',
+    'language',
+    'cover_type',
+    'edition',
     ];
 }
