@@ -8,20 +8,23 @@ use App\Models\Order;
 
 class PayPalController extends Controller
 {
-    private function getAccessToken()
-    {
-        $client = config("services.paypal.client_id");
-        $secret = config("services.paypal.secret");
-        $response = Http::asForm()->withBasicAuth($client, $secret)
-            ->post("https://api-m.sandbox.paypal.com/v1/oauth2/token", [
-                "grant_type" => "client_credentials"
-            ]);
-        if (!$response->successful()) {
-    return response()->json([
-        'error' => $response->json()
-    ], 500);
-}
+ private function getAccessToken()
+{
+    $client = config("services.paypal.client_id");
+    $secret = config("services.paypal.secret");
+
+    $response = Http::asForm()
+        ->withBasicAuth($client, $secret)
+        ->post("https://api-m.sandbox.paypal.com/v1/oauth2/token", [
+            "grant_type" => "client_credentials"
+        ]);
+
+    if (!$response->successful()) {
+        throw new \Exception("PayPal token error: " . $response->body());
     }
+
+    return $response->json()['access_token'];
+}
 
     public function createOrder(Request $request)
     {
@@ -57,13 +60,12 @@ class PayPalController extends Controller
             ]
         );
         // 3) حفظ رقم العملية من PayPal
-    if (!$response->successful()) {
+    if (!$response->successful() || !isset($response->json()['id'])) {
     return response()->json([
         'paypal_error' => $response->json()
     ], 500);
 }
 
-$paypalOrderId = $response->json()['id'];
     $paypalOrderId = $response->json()["id"];
     $order->update([
         'payment_id' => $paypalOrderId
