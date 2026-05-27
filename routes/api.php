@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PayPalController;
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
@@ -25,7 +26,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         Route::put('/profile', [ProfileController::class, 'update']);
         Route::get('/my-orders', [OrderController::class, 'myOrders']);
         Route::post('/payment/create', [PaymentController::class, 'createPayment']);
+        
         });
+        Route::post("payment/paypal/create", [PayPalController::class, "createOrder"]);
+        Route::post("payment/paypal/capture", [PayPalController::class, "captureOrder"]);
         Route::get('/payment/callback', [PaymentController::class, 'callback']);
 Route::get('/products', [ProductController::class, 'index']);
 // فلاتر

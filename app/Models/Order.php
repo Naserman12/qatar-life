@@ -9,22 +9,40 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'status',
+ protected $fillable = [
+    'user_id',
+    'status',
 
-        'total',
+    // المبالغ
+    'subtotal',
+    'total',
+    'tax',
 
-        'items',
-        'paid_at',
-        'gift_contact_method',
+    // بيانات العميل
+    'customer_name',
+    'phone',
 
-        'is_gift',
-        'gift_name',
-        'gift_phone',
-        'gift_from',
-        'gift_message',
-    ];
+    // السلة
+    'items',
+
+    // الدفع
+    'payment_id',
+    'payment_status',
+    'payment_method',
+    'payment_response',
+
+    // وقت الدفع
+    'paid_at',
+
+    // بيانات الهدية
+    'is_gift',
+    'gift_contact_method',
+    'gift_name',
+    'gift_phone',
+    'gift_from',
+    'gift_message',
+];
+
 
     public function product()
     {

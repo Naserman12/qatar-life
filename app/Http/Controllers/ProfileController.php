@@ -24,7 +24,6 @@ class ProfileController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
-
         if ($request->password) {
             $user->password = bcrypt($request->password);
         }
