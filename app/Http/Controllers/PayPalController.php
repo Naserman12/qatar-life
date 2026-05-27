@@ -1,94 +1,41 @@
 <?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\PayPalService;
 use App\Models\Order;
+use Illuminate\Http\Request;
 
 class PayPalController extends Controller
 {
- private function getAccessToken()
-{
-    $client = config("services.paypal.client_id");
-    $secret = config("services.paypal.secret");
-
-    $response = Http::asForm()
-        ->withBasicAuth($client, $secret)
-        ->post("https://api-m.sandbox.paypal.com/v1/oauth2/token", [
-            "grant_type" => "client_credentials"
-        ]);
-
-    if (!$response->successful()) {
-        throw new \Exception("PayPal token error: " . $response->body());
-    }
-
-    return $response->json()['access_token'];
-}
-
-    public function createOrder(Request $request)
+    public function createOrder(Request $request, PayPalService $paypal)
     {
         $request->validate([
-    'amount' => 'required|numeric|min:1',
-    'cart' => 'required|array'
+            'amount' => 'required|numeric|min:1',
+            'cart' => 'required|array'
         ]);
-            // 1) إنشاء الطلب في قاعدة البيانات
-    $order = Order::create([
-        'customer_name' => auth()->user()->name ?? 'Guest',
-        'phone' => auth()->user()->phone ?? null,
-        'items' => json_encode($request->cart),
-        'subtotal' => $request->amount,
-        'total' => $request->amount,
-        'tax' => 0,
-        'payment_status' => 'pending',
-        'payment_method' => 'paypal',
-    ]);
-        $token = $this->getAccessToken();
 
-        $response = Http::withToken($token)->post(
-            "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-            [
-                "intent" => "CAPTURE",
-                "purchase_units" => [
-                    [
-                        "amount" => [
-                            "currency_code" => "USD",
-                            "value" => $request->amount
-                        ]
-                    ]
-                ]
-            ]
-        );
-        // 3) حفظ رقم العملية من PayPal
-    if (!$response->successful() || !isset($response->json()['id'])) {
-    return response()->json([
-        'paypal_error' => $response->json()
-    ], 500);
-}
+        $order = Order::create([
+            'customer_name' => auth()->user()->name,
+            'items' => json_encode($request->cart),
+            'subtotal' => $request->amount,
+            'total' => $request->amount,
+            'payment_status' => 'pending',
+            'payment_method' => 'paypal',
+        ]);
 
-    $paypalOrderId = $response->json()["id"];
-    $order->update([
-        'payment_id' => $paypalOrderId
-    ]);
+        $paypalOrder = $paypal->createOrder($request->amount);
 
-     return response()->json([
-        "orderID" => $paypalOrderId
-    ]);
+        $order->update([
+            'payment_id' => $paypalOrder['id']
+        ]);
+
+        return response()->json([
+            'orderID' => $paypalOrder['id']
+        ]);
     }
 
-    public function captureOrder(Request $request)
+    public function captureOrder(Request $request, PayPalService $paypal)
     {
-        $token = $this->getAccessToken();
+        $data = $paypal->captureOrder($request->orderID);
 
-        $response = Http::withToken($token)
-            ->withHeaders([
-                "Content-Type" => "application/json"
-            ])
-            ->post("https://api-m.sandbox.paypal.com/v2/checkout/orders/{$request->orderID}/capture");
-
-        $data = $response->json();
-
-        // 1) إيجاد الطلب في قاعدة البيانات
         $order = Order::where('payment_id', $request->orderID)->first();
 
         if ($order) {
@@ -99,7 +46,28 @@ class PayPalController extends Controller
             ]);
         }
 
-        return $data;
+        return response()->json($data);
+    }
+    public function handle(Request $request)
+    {
+        $event = $request->all();
+
+        if ($event['event_type'] === 'PAYMENT.CAPTURE.COMPLETED') {
+
+            $orderId = $event['resource']['supplementary_data']['related_ids']['order_id'] ?? null;
+
+            $order = Order::where('payment_id', $orderId)->first();
+
+            if ($order) {
+                $order->update([
+                    'payment_status' => 'paid',
+                    'payment_response' => json_encode($event),
+                    'paid_at' => now(),
+                ]);
+            }
+        }
+
+        return response()->json(['status' => 'ok']);
     }
 
 }

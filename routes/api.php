@@ -28,8 +28,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         Route::post('/payment/create', [PaymentController::class, 'createPayment']);
         
         });
-        Route::post("payment/paypal/create", [PayPalController::class, "createOrder"]);
-        Route::post("payment/paypal/capture", [PayPalController::class, "captureOrder"]);
+        Route::post("/payment/paypal/create", [PayPalController::class, "createOrder"]);
+        Route::post("/payment/paypal/capture", [PayPalController::class, "captureOrder"]);
+        Route::post('/paypal/webhook', [PayPalController::class, 'handle']);
         Route::get('/payment/callback', [PaymentController::class, 'callback']);
 Route::get('/products', [ProductController::class, 'index']);
 // فلاتر
