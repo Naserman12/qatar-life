@@ -38,8 +38,9 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
-    ],
-    'paypal' => [
+        ],
+        'paypal' => [
+    'paypal_mode' => env('PAYPAL_MODE')
     'client_id' => env('PAYPAL_CLIENT_ID'),
     'secret' => env('PAYPAL_SECRET'),
     ],

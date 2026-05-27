@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Order;
 
 class PayPalController extends Controller
 {
@@ -15,16 +16,24 @@ class PayPalController extends Controller
             ->post("https://api-m.sandbox.paypal.com/v1/oauth2/token", [
                 "grant_type" => "client_credentials"
             ]);
-        return $response->json()["access_token"];
+        if (!$response->successful()) {
+    return response()->json([
+        'error' => $response->json()
+    ], 500);
+}
     }
 
     public function createOrder(Request $request)
     {
+        $request->validate([
+    'amount' => 'required|numeric|min:1',
+    'cart' => 'required|array'
+        ]);
             // 1) إنشاء الطلب في قاعدة البيانات
     $order = Order::create([
         'customer_name' => auth()->user()->name ?? 'Guest',
         'phone' => auth()->user()->phone ?? null,
-        'items' => json_encode($request->cart_items),
+        'items' => json_encode($request->cart),
         'subtotal' => $request->amount,
         'total' => $request->amount,
         'tax' => 0,
@@ -48,7 +57,13 @@ class PayPalController extends Controller
             ]
         );
         // 3) حفظ رقم العملية من PayPal
-    
+    if (!$response->successful()) {
+    return response()->json([
+        'paypal_error' => $response->json()
+    ], 500);
+}
+
+$paypalOrderId = $response->json()['id'];
     $paypalOrderId = $response->json()["id"];
     $order->update([
         'payment_id' => $paypalOrderId
