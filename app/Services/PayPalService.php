@@ -1,3 +1,4 @@
+<?php
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -20,6 +21,12 @@ class PayPalService
             )
             ->post($this->baseUrl() . "/v1/oauth2/token", [
                 'grant_type' => 'client_credentials'
+            ]);
+            dd([
+            config('services.paypal.client_id'),
+            config('services.paypal.secret'),
+            $response->status(),
+            $response->body()
             ]);
 
         if (!$response->successful()) {

@@ -1,4 +1,5 @@
 <?php
+namespace App\Http\Controllers;
 use App\Services\PayPalService;
 use App\Models\Order;
 use Illuminate\Http\Request;
