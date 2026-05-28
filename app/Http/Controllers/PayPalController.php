@@ -39,7 +39,7 @@ class PayPalController extends Controller
 
         $order = Order::where('payment_id', $request->orderID)->first();
 
-        if ($order) {
+        if ($order && $data['status'] === 'COMPLETED') {
             $order->update([
                 'payment_status' => 'paid',
                 'payment_response' => json_encode($data),
