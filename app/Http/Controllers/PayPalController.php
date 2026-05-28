@@ -36,6 +36,9 @@ class PayPalController extends Controller
     public function captureOrder(Request $request, PayPalService $paypal)
     {
         $data = $paypal->captureOrder($request->orderID);
+        if ($data['status'] !== 'APPROVED') {
+    throw new \Exception("Order not approved yet");
+    }
 
         $order = Order::where('payment_id', $request->orderID)->first();
 
