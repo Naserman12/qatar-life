@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Services\PayPalService;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PayPalController extends Controller
 {
@@ -14,6 +15,7 @@ class PayPalController extends Controller
         ]);
 
         $order = Order::create([
+            'user_id' => Auth::id(),
             'customer_name' => auth()->user()->name,
             'items' => json_encode($request->cart),
             'subtotal' => $request->amount,
