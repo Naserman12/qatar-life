@@ -13,6 +13,7 @@ class PayPalController extends Controller
             'amount' => 'required|numeric|min:1',
             'cart' => 'required|array'
         ]);
+        
 
         $order = Order::create([
             'user_id' => Auth::id(),
@@ -38,9 +39,9 @@ class PayPalController extends Controller
     public function captureOrder(Request $request, PayPalService $paypal)
     {
         $data = $paypal->captureOrder($request->orderID);
-        if ($data['status'] !== 'APPROVED') {
-    throw new \Exception("Order not approved yet");
-    }
+        if ($data['status'] !== 'COMPLETED') {
+            throw new \Exception("Order not COMPLETED yet");
+            }
 
         $order = Order::where('payment_id', $request->orderID)->first();
 
