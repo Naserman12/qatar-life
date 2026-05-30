@@ -92,7 +92,12 @@ public function captureOrder(
         ]);
 
         return response()->json([
-            'error' => $e->getMessage()
+            'error' => "خطأ في معالجة الدفع",
+            'debug' => 'EXCEPTION',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
         ], 500);
     }
 }
