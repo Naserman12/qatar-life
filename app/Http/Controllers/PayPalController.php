@@ -36,25 +36,66 @@ class PayPalController extends Controller
         ]);
     }
 
-    public function captureOrder(Request $request, PayPalService $paypal)
-    {
-        $data = $paypal->captureOrder($request->orderID);
-        if ($data['status'] !== 'COMPLETED') {
-            throw new \Exception("Order not COMPLETED yet");
-            }
+public function captureOrder(
+    Request $request,
+    PayPalService $paypal
+) {
+    try {
 
+        logger()->info('CAPTURE REQUEST', [
+            'orderID' => $request->orderID
+        ]);
+
+        $data = $paypal->captureOrder($request->orderID);
+
+        logger()->info('PAYPAL CAPTURE RESPONSE', $data);
+
+        // 1️⃣ إيجاد الطلب
         $order = Order::where('payment_id', $request->orderID)->first();
 
-        if ($order && $data['status'] === 'COMPLETED') {
+        if (!$order) {
+            return response()->json([
+                'error' => 'Order not found'
+            ], 404);
+        }
+
+        // 2️⃣ التحقق من حالة الدفع
+        if (($data['status'] ?? null) === 'COMPLETED') {
+
             $order->update([
                 'payment_status' => 'paid',
                 'payment_response' => json_encode($data),
                 'paid_at' => now(),
             ]);
+
+        } else {
+
+            $order->update([
+                'payment_status' => 'failed',
+                'payment_response' => json_encode($data),
+            ]);
         }
 
-        return response()->json($data);
+        // 3️⃣ رد واضح للفرونت
+        return response()->json([
+            'success' => true,
+            'status' => $data['status'],
+            'order' => $order
+        ]);
+
+    } catch (\Throwable $e) {
+
+        logger()->error('CAPTURE ERROR', [
+            'message' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ]);
+
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
     public function handle(Request $request)
     {
         $event = $request->all();
