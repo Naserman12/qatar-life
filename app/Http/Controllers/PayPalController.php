@@ -36,71 +36,71 @@ class PayPalController extends Controller
         ]);
     }
 
-public function captureOrder(
-    Request $request,
-    PayPalService $paypal
-) {
-    try {
+// public function captureOrder(
+//     Request $request,
+//     PayPalService $paypal
+// ) {
+//     try {
 
-        logger()->info('CAPTURE REQUEST', [
-            'orderID' => $request->orderID
-        ]);
+//         logger()->info('CAPTURE REQUEST', [
+//             'orderID' => $request->orderID
+//         ]);
 
-        $data = $paypal->captureOrder($request->orderID);
+//         $data = $paypal->captureOrder($request->orderID);
 
-        logger()->info('PAYPAL CAPTURE RESPONSE', $data);
+//         logger()->info('PAYPAL CAPTURE RESPONSE', $data);
 
-        // 1️⃣ إيجاد الطلب
-        $order = Order::where('payment_id', $request->orderID)->first();
+//         // 1️⃣ إيجاد الطلب
+//         $order = Order::where('payment_id', $request->orderID)->first();
 
-        if (!$order) {
-            return response()->json([
-                'error' => 'Order not found'
-            ], 404);
-        }
+//         if (!$order) {
+//             return response()->json([
+//                 'error' => 'Order not found'
+//             ], 404);
+//         }
 
-        // 2️⃣ التحقق من حالة الدفع
-        if (($data['status'] ?? null) === 'COMPLETED') {
+//         // 2️⃣ التحقق من حالة الدفع
+//         if (($data['status'] ?? null) === 'COMPLETED') {
 
-            $order->update([
-                'payment_status' => 'paid',
-                'payment_response' => json_encode($data),
-                'paid_at' => now(),
-            ]);
+//             $order->update([
+//                 'payment_status' => 'paid',
+//                 'payment_response' => json_encode($data),
+//                 'paid_at' => now(),
+//             ]);
 
-        } else {
+//         } else {
 
-            $order->update([
-                'payment_status' => 'failed',
-                'payment_response' => json_encode($data),
-            ]);
-        }
+//             $order->update([
+//                 'payment_status' => 'failed',
+//                 'payment_response' => json_encode($data),
+//             ]);
+//         }
 
-        // 3️⃣ رد واضح للفرونت
-        return response()->json([
-            'success' => true,
-            'status' => $data['status'],
-            'order' => $order
-        ]);
+//         // 3️⃣ رد واضح للفرونت
+//         return response()->json([
+//             'success' => true,
+//             'status' => $data['status'],
+//             'order' => $order
+//         ]);
 
-    } catch (\Throwable $e) {
+//     } catch (\Throwable $e) {
 
-        logger()->error('CAPTURE ERROR', [
-            'message' => $e->getMessage(),
-            'line' => $e->getLine(),
-            'file' => $e->getFile()
-        ]);
+//         logger()->error('CAPTURE ERROR', [
+//             'message' => $e->getMessage(),
+//             'line' => $e->getLine(),
+//             'file' => $e->getFile()
+//         ]);
 
-        return response()->json([
-            'error' => "خطأ في معالجة الدفع",
-            'debug' => 'EXCEPTION',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString()
-        ], 500);
-    }
-}
+//         return response()->json([
+//             'error' => "خطأ في معالجة الدفع",
+//             'debug' => 'EXCEPTION',
+//             'message' => $e->getMessage(),
+//             'file' => $e->getFile(),
+//             'line' => $e->getLine(),
+//             'trace' => $e->getTraceAsString()
+//         ], 500);
+//     }
+// }
     public function handle(Request $request)
     {
         $event = $request->all();
