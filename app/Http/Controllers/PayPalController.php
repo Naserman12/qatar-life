@@ -88,7 +88,48 @@ class PayPalController extends Controller
 //         ], 500);
 //     }
 // }
-    
+    public function captureOrder(Request $request, PayPalService $paypal)
+{
+    try {
+
+        $data = $paypal->captureOrder($request->orderID);
+
+        $order = Order::where('payment_id', $request->orderID)->first();
+
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        $status = $data['status'] ?? null;
+
+        if (in_array($status, ['COMPLETED', 'APPROVED'])) {
+
+            $order->update([
+                'payment_status' => 'paid',
+                'payment_response' => json_encode($data),
+                'paid_at' => now(),
+            ]);
+
+        } else {
+
+            $order->update([
+                'payment_status' => 'failed',
+                'payment_response' => json_encode($data),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $status,
+        ]);
+
+    } catch (\Throwable $e) {
+
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
     public function handle(Request $request)
     {
         $event = $request->all();
