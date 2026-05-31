@@ -98,9 +98,11 @@ class PayPalService
                 'response' => $response->body()
             ]);
 
-            throw new \Exception(
-                "PayPal Capture Failed"
-            );
+        return [
+        'paypal_status' => $response->status(),
+        'paypal_body' => $response->json(),
+            ];
+
         }
 
         return $response->json();
