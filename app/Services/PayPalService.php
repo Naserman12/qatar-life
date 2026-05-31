@@ -89,7 +89,8 @@ class PayPalService
             ])
             ->post(
                 $this->baseUrl() .
-                "/v2/checkout/orders/{$orderId}/capture"
+                "/v2/checkout/orders/{$orderId}/capture",
+                [],
             );
 
         if (!$response->successful()) {
