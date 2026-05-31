@@ -36,73 +36,16 @@ class PayPalController extends Controller
             'orderID' => $paypalOrder['id']
         ]);
     }
-    public function captureOrder(Request $request, PayPalService $paypal)
-{
-    try {
-
-        error_log('CAPTURE REQUEST: ' . json_encode($request->all()));
-
-        $data = $paypal->captureOrder($request->orderID);
-
-        error_log('PAYPAL RESPONSE: ' . json_encode($data));
-
-        $order = Order::where('payment_id', $request->orderID)->first();
-
-        if (!$order) {
-            return response()->json([
-                'error' => 'Order not found'
-            ], 404);
-        }
-
-         $status = $data['status'] ?? null;
-
-        if (!in_array($status, ['COMPLETED', 'APPROVED'])) {
-            logger()->error('Invalid PayPal Status', $data);
-
-            return response()->json([
-                'error' => 'Payment not completed',
-                'status' => $status,
-                'data' => $data
-            ], 400);
-        } else {
-
-            $order->update([
-                'payment_status' => 'failed',
-                'payment_response' => json_encode($data),
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'status' => $status,
-            'order' => $order
-        ]);
-
-    } catch (\Throwable $e) {
-
-        error_log('CAPTURE ERROR: ' . $e->getMessage());
-
-        return response()->json([
-            'error' => $e->getMessage(),
-            'line' => $e->getLine()
-        ], 500);
-    }
-}
-// public function captureOrder(
-//     Request $request,
-//     PayPalService $paypal
-// ) {
+//     public function captureOrder(Request $request, PayPalService $paypal)
+// {
 //     try {
 
-//         logger()->info('CAPTURE REQUEST', [
-//             'orderID' => $request->orderID
-//         ]);
+//         error_log('CAPTURE REQUEST: ' . json_encode($request->all()));
 
 //         $data = $paypal->captureOrder($request->orderID);
 
-//         logger()->info('PAYPAL CAPTURE RESPONSE', $data);
+//         error_log('PAYPAL RESPONSE: ' . json_encode($data));
 
-//         // 1️⃣ إيجاد الطلب
 //         $order = Order::where('payment_id', $request->orderID)->first();
 
 //         if (!$order) {
@@ -111,15 +54,16 @@ class PayPalController extends Controller
 //             ], 404);
 //         }
 
-//         // 2️⃣ التحقق من حالة الدفع
-//         if (($data['status'] ?? null) === 'COMPLETED') {
+//          $status = $data['status'] ?? null;
 
-//             $order->update([
-//                 'payment_status' => 'paid',
-//                 'payment_response' => json_encode($data),
-//                 'paid_at' => now(),
-//             ]);
+//         if (!in_array($status, ['COMPLETED', 'APPROVED'])) {
+//             logger()->error('Invalid PayPal Status', $data);
 
+//             return response()->json([
+//                 'error' => 'Payment not completed',
+//                 'status' => $status,
+//                 'data' => $data
+//             ], 400);
 //         } else {
 
 //             $order->update([
@@ -128,31 +72,23 @@ class PayPalController extends Controller
 //             ]);
 //         }
 
-//         // 3️⃣ رد واضح للفرونت
 //         return response()->json([
 //             'success' => true,
-//             'status' => $data['status'],
+//             'status' => $status,
 //             'order' => $order
 //         ]);
 
 //     } catch (\Throwable $e) {
 
-//         logger()->error('CAPTURE ERROR', [
-//             'message' => $e->getMessage(),
-//             'line' => $e->getLine(),
-//             'file' => $e->getFile()
-//         ]);
+//         error_log('CAPTURE ERROR: ' . $e->getMessage());
 
 //         return response()->json([
-//             'error' => "خطأ في معالجة الدفع",
-//             'debug' => 'EXCEPTION',
-//             'message' => $e->getMessage(),
-//             'file' => $e->getFile(),
-//             'line' => $e->getLine(),
-//             'trace' => $e->getTraceAsString()
+//             'error' => $e->getMessage(),
+//             'line' => $e->getLine()
 //         ], 500);
 //     }
 // }
+    
     public function handle(Request $request)
     {
         $event = $request->all();
