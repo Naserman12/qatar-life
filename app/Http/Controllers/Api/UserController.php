@@ -12,7 +12,9 @@ class UserController extends Controller
 {
      public function index()
     {
-      return User::withCount('orders')->get();
+      return User::with(['orders' => function ($query){
+        $query->latest();
+      }])->withCount('orders')->get();
     }
     // تسجيل مستخدم جديد
     public function register(Request $request)

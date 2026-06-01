@@ -24,8 +24,12 @@ class PayPalController extends Controller
             'total' => $request->amount,
             'payment_status' => 'pending',
             'payment_method' => 'paypal',
-        ]);
-
+            ]);
+            if ($order->payment_status === 'paid') {
+                return response()->json([
+                    'message' => 'Already paid'
+                ]);
+            } 
         $paypalOrder = $paypal->createOrder($request->amount);
 
         $order->update([
@@ -88,7 +92,7 @@ class PayPalController extends Controller
 //         ], 500);
 //     }
 // }
-    public function captureOrder(Request $request, PayPalService $paypal)
+public function captureOrder(Request $request, PayPalService $paypal)
 {
     try {
 
@@ -100,7 +104,10 @@ class PayPalController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        $status = $data['status'] ?? null;
+        // $status = $data['status'] ?? null;
+        $status = $data['status']
+        ?? $data['purchase_units'][0]['payments']['captures'][0]['status']
+        ?? null;
 
         if (in_array($status, ['COMPLETED', 'APPROVED'])) {
 
