@@ -118,7 +118,11 @@ public function store( ProductRequest  $request)
         'message' => '✅ تم تحديث المنتج بنجاح',
         'product' => $product
     ]);
-}
+} 
+// إظهار واخفاء المنتجات
+    public function toggaleProduct(Req){
+        return
+    }
     /**
      * Remove the specified resource from storage.
      */
