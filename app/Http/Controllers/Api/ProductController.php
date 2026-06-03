@@ -120,9 +120,9 @@ public function store( ProductRequest  $request)
     ]);
 } 
 // إظهار واخفاء المنتجات
-    public function toggaleProduct(Req){
-        return
-    }
+    // public function toggaleProduct(Req){
+    //     return
+    // }
     /**
      * Remove the specified resource from storage.
      */

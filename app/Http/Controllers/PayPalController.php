@@ -14,7 +14,9 @@ class PayPalController extends Controller
             'cart' => 'required|array'
         ]);
         
-
+        $mosqueType = $request->mosque['type'] ?? null;
+        $mosqueName = $request->mosque['name'] ?? null;
+        $districtId = $request->mosque['district_id'] ?? null;
         $order = Order::create([
             'payment_id' => null,
             'user_id' => Auth::id(),
@@ -24,6 +26,12 @@ class PayPalController extends Controller
             'total' => $request->amount,
             'payment_status' => 'pending',
             'payment_method' => 'paypal',
+
+    // 🕌 المسجد
+    'mosque_type' => $mosqueType,
+    'district_id' => $districtId,
+    'mosque_name' => $mosqueName,
+
             'is_gift' => $request->gift ? true : false,
 
             'gift_name' => $request->gift['name'] ?? null,
@@ -31,6 +39,8 @@ class PayPalController extends Controller
             'gift_from' => $request->gift['from'] ?? null,
             'gift_message' => $request->gift['message'] ?? null,
             'gift_contact_method' => $request->gift['gift_contact_method'] ?? null,
+            
+
             ]);
             if ($order->payment_status === 'paid') {
                 return response()->json([
@@ -47,58 +57,7 @@ class PayPalController extends Controller
             'orderID' => $paypalOrder['id']
         ]);
     }
-//     public function captureOrder(Request $request, PayPalService $paypal)
-// {
-//     try {
 
-//         error_log('CAPTURE REQUEST: ' . json_encode($request->all()));
-
-//         $data = $paypal->captureOrder($request->orderID);
-
-//         error_log('PAYPAL RESPONSE: ' . json_encode($data));
-
-//         $order = Order::where('payment_id', $request->orderID)->first();
-
-//         if (!$order) {
-//             return response()->json([
-//                 'error' => 'Order not found'
-//             ], 404);
-//         }
-
-//          $status = $data['status'] ?? null;
-
-//         if (!in_array($status, ['COMPLETED', 'APPROVED'])) {
-//             logger()->error('Invalid PayPal Status', $data);
-
-//             return response()->json([
-//                 'error' => 'Payment not completed',
-//                 'status' => $status,
-//                 'data' => $data
-//             ], 400);
-//         } else {
-
-//             $order->update([
-//                 'payment_status' => 'failed',
-//                 'payment_response' => json_encode($data),
-//             ]);
-//         }
-
-//         return response()->json([
-//             'success' => true,
-//             'status' => $status,
-//             'order' => $order
-//         ]);
-
-//     } catch (\Throwable $e) {
-
-//         error_log('CAPTURE ERROR: ' . $e->getMessage());
-
-//         return response()->json([
-//             'error' => $e->getMessage(),
-//             'line' => $e->getLine()
-//         ], 500);
-//     }
-// }
 public function captureOrder(Request $request, PayPalService $paypal)
 {
     try {

@@ -41,6 +41,11 @@ class Order extends Model
     'gift_phone',
     'gift_from',
     'gift_message',
+
+    // بيانات المسجد
+    'mosque_type',
+    'district_id',
+    'custom_mosque_name',
 ];
 
 

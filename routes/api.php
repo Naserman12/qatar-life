@@ -12,12 +12,14 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\DistrictController;
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('/profile', [UserController::class, 'profile'])->middleware('auth:sanctum');
 
+Route::get('/districts', [DistrictController::class, 'index']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
     });
@@ -38,6 +40,8 @@ Route::get('/products/items', [ProductController::class, 'products']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('/cart', CartController::class);
+    Route::post('/districts', [DistrictController::class, 'store']);
+    Route::delete('/districts/{id}', [DistrictController::class, 'destroy']);
     Route::apiResource('/products', ProductController::class)->except(['index']);
     Route::get('/admin/orders', [OrderController::class, 'allOrders']); // كل الطلبات4
     Route::put('/admin/orders/{id}', [OrderController::class, 'update']); // تحديث الطلب
