@@ -99,7 +99,7 @@ $response = Http::withBasicAuth(
             'gift_message' => $paymentData['gift_data']['message'] ?? null,
 
             // 📲 طريقة التواصل
-            'gift_send_mode' => $paymentData['gift_data']['contact_method'] ?? 'store',
+            'gift_contact_method' => $paymentData['gift_data']['gift_contact_method'] ?? null,
         ]);
 
         // 🧹 حذف الجلسة المؤقتة
@@ -119,7 +119,7 @@ $response = Http::withBasicAuth(
             return;
         }
         // 📲 الإهداء عبر المتجر
-        if ($order->gift_send_mode === 'store') {
+        if ($order->contact_method === 'store') {
 
             Log::info('🎁 Gift via STORE', [
                 'to' => $order->gift_phone,
@@ -131,7 +131,7 @@ $response = Http::withBasicAuth(
             // WhatsApp API / SMS / Notification
         }
         // 👤 الإهداء من المستخدم
-        if ($order->gift_send_mode === 'user') {
+        if ($order->contact_method === 'user') {
             Log::info('🎁 Gift via USER (no auto send)', [
                 'note' => 'User will contact recipient manually',
             ]);

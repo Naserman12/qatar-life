@@ -30,7 +30,7 @@ class PayPalController extends Controller
             'gift_phone' => $request->gift['phone'] ?? null,
             'gift_from' => $request->gift['from'] ?? null,
             'gift_message' => $request->gift['message'] ?? null,
-            'gift_send_mode' => $request->gift['send_mode'] ?? null,
+            'gift_contact_method' => $request->gift['gift_contact_method'] ?? null,
             ]);
             if ($order->payment_status === 'paid') {
                 return response()->json([
